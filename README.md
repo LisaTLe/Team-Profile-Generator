@@ -1,7 +1,5 @@
 # Team-Profile-Generator
 
-<h1>Team Profile Generator </h1>
-
 by Lisa Le
 
 ## Description
