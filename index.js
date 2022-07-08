@@ -1,9 +1,10 @@
 const fs = require("fs");
 const inquirer = require("inquirer");
+
 const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
-const Team = require("./lib/Team");
+const Team = require("./lib/team");
 
 const team = new Team();
 
@@ -129,7 +130,7 @@ function addIntern() {
 
 function generateHtml() {
   const stringifiedTeam = JSON.stringify(team);
-  fs.writeFile("team.txt", stringifiedTeam, "utf-8", (err) => {
+  fs.writeFile("./dist/index.html", stringifiedTeam, "utf-8", (err) => {
     if (err) {
       console.log(err);
     } else {
@@ -190,3 +191,5 @@ inquirer
     team.addMember(manager);
     getNext(data.addMore);
   });
+
+generateHtml();
