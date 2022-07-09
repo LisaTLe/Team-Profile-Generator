@@ -1,8 +1,7 @@
-const Employee = require("../lib/Employee");
+const fs = require("fs");
 
-const teamDiv = (team) => {
+const createTeam = (team) => {
   //manager card
-
   const createManager = (manager) => {
     return ` 
 <div class="card, border border-info, rounded">
@@ -52,35 +51,36 @@ const teamDiv = (team) => {
   };
 
   //join all cards into one
-  const teamHTML = [];
+  const teamDiv = (team) => {
+    let teamHTML = "";
 
-  teamHTML.push(
-    team
-      .filter((Employee) => Employee.getRole() === "Manager")
-      .map((manager) => createManager(manager))
-  );
+    teamHTML.push(
+      team
+        .filter((Employee) => Employee.getRole() === "manager")
+        .map((manager) => createManager(manager))
+    );
 
-  teamHTML.push(
-    team
-      .filter((Employee) => Employee.getRole() === "Engineer")
-      .map((engineer) => createEngineer(engineer))
-      .join("")
-  );
+    teamHTML.push(
+      team
+        .filter((Employee) => Employee.getRole() === "engineer")
+        .map((engineer) => createEngineer(engineer))
+        .join("")
+    );
 
-  teamHTML.push(
-    team
-      .filter((Employee) => Employee.getRole() === "Intern")
-      .map((intern) => createIntern(intern))
-      .join("")
-  );
+    teamHTML.push(
+      team
+        .filter((Employee) => Employee.getRole() === "intern")
+        .map((intern) => createIntern(intern))
+        .join("")
+    );
 
-  return teamHTML.join("");
-};
+    return teamHTML.join("");
+  };
 
-//html template page
+  //html template page
 
-module.exports = (team) => {
-  return `
+  module.exports = (team) => {
+    return `
   <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -99,8 +99,9 @@ module.exports = (team) => {
       <header class="h1, text-center"> Welcome, Meet The Team!</header>
       <body>
         
-      ${teamDiv(team)}
+      ${createTeam(team)}
             
       </body>
     </html>`;
+  };
 };
