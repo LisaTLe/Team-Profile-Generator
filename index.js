@@ -4,9 +4,17 @@ const inquirer = require("inquirer");
 const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
-const Team = require("./lib/team");
 
-const team = new Team();
+const generate = require("./assets/generateHTML");
+
+const team = [];
+
+function init() {
+  writeFile();
+  addManager();
+  addEngineer();
+  addIntern();
+}
 
 function getNext(option) {
   if (option === "addEngineer") {
@@ -20,28 +28,28 @@ function getNext(option) {
   }
 }
 
-function addEngineer() {
+function addManager() {
   inquirer
     .prompt([
       {
-        name: "engineerName",
-        messsage: "What is the engineer's name?",
         type: "input",
+        name: "name",
+        message: "What is the Manager name of this team?",
       },
       {
-        name: "engineerId",
-        message: "What is the engineer's ID?",
         type: "input",
+        name: "employeeId",
+        message: "What is the employee's id number?",
       },
       {
-        name: "engineerEmail",
-        message: "What is the engineer's email?",
         type: "input",
+        name: "email",
+        message: "What is the employee's email?",
       },
       {
-        name: "engineerGithub",
-        message: "What is the engineer's GitHub username?",
         type: "input",
+        name: "officeNumber",
+        message: "What is the manager's office number?",
       },
       {
         name: "addMore",
@@ -49,28 +57,82 @@ function addEngineer() {
         choices: [
           {
             value: "addEngineer",
-            name: "Add engineer",
+            name: "Add Engineer",
           },
           {
             value: "addIntern",
-            name: "Add intern",
+            name: "Add Intern",
           },
           {
-            value: "finish",
-            name: "Finish",
+            value: "allDone",
+            name: "All Done",
           },
         ],
       },
     ])
-    .then((data) => {
-      const engineer = new Engineer(
-        data.engineerId,
-        data.engineerName,
-        data.engineerEmail,
-        data.engineerGithub
+    .then((answers) => {
+      const manager = new Manager(
+        answers.name,
+        answers.employeeId,
+        answers.email,
+        answers.officeNumber
       );
-      team.addMember(engineer);
-      getNext(data.addMore);
+      team.push(manager);
+      getNext(answers.addMore);
+    });
+}
+
+function addEngineer() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "What is the Engineer's name of this team?",
+      },
+      {
+        type: "input",
+        name: "employeeId",
+        message: "What is the employee's id number?",
+      },
+      {
+        type: "input",
+        name: "email",
+        message: "What is the employee's email?",
+      },
+      {
+        type: "input",
+        name: "gitHub",
+        message: "What is the engineer's GitHub username?",
+      },
+      {
+        name: "addMore",
+        type: "list",
+        choices: [
+          {
+            value: "addEngineer",
+            name: "Add Engineer",
+          },
+          {
+            value: "addIntern",
+            name: "Add Intern",
+          },
+          {
+            value: "allDone",
+            name: "All Done",
+          },
+        ],
+      },
+    ])
+    .then((answers) => {
+      const engineer = new Engineer(
+        answers.name,
+        answers.employeeId,
+        answers.email,
+        answers.gitHub
+      );
+      team.push(engineer);
+      getNext(answers.addMore);
     });
 }
 
@@ -78,24 +140,24 @@ function addIntern() {
   inquirer
     .prompt([
       {
-        name: "internName",
-        messsage: "What is the intern's name?",
         type: "input",
+        name: "name",
+        message: "What is the Intern's name?",
       },
       {
-        name: "internId",
-        message: "What is the intern's ID?",
         type: "input",
+        name: "employeeId",
+        message: "What is the intern's id number?",
       },
       {
-        name: "internEmail",
+        type: "input",
+        name: "email",
         message: "What is the intern's email?",
-        type: "input",
       },
       {
-        name: "internSchool",
-        message: "What school does the intern attend?",
         type: "input",
+        name: "school",
+        message: "What school is the intern attending at?",
       },
       {
         name: "addMore",
@@ -103,93 +165,40 @@ function addIntern() {
         choices: [
           {
             value: "addEngineer",
-            name: "Add engineer",
+            name: "Add Engineer",
           },
           {
             value: "addIntern",
-            name: "Add intern",
+            name: "Add Intern",
           },
           {
-            value: "finish",
-            name: "Finish",
+            value: "allDone",
+            name: "All Done",
           },
         ],
       },
     ])
-    .then((data) => {
+    .then((answers) => {
       const intern = new Intern(
-        data.internId,
-        data.internName,
-        data.internEmail,
-        data.internSchool
+        answers.name,
+        answers.employeeId,
+        answers.email,
+        answers.achool
       );
-      team.addMember(intern);
-      getNext(data.addMore);
+      team.push(intern);
+      getNext(answers.addMore);
     });
 }
 
-function generateHtml() {
-  const stringifiedTeam = JSON.stringify(team);
-  fs.writeFile("./dist/index.html", stringifiedTeam, "utf-8", (err) => {
+const writeFile = (team) => {
+  fs.writeFile("./dist/index.html", generate(team), "utf-8", (err) => {
     if (err) {
       console.log(err);
+      return;
     } else {
-      console.log("team successfully written");
+      console.log("Team Profile has been created successfully!");
     }
   });
-}
+};
 
-// get the manager's name, employee ID, email address and office number
-inquirer
-  .prompt([
-    {
-      name: "managerName",
-      type: "input",
-      message: "What is the team manager's name?",
-    },
-    {
-      name: "employeeId",
-      type: "input",
-      message: "What is the employee ID?",
-    },
-    {
-      name: "managerEmail",
-      type: "input",
-      message: "What is the manager's email address?",
-    },
-    {
-      name: "officeNumber",
-      type: "input",
-      message: "What is the office number?",
-    },
-    {
-      name: "addMore",
-      type: "list",
-      choices: [
-        {
-          value: "addEngineer",
-          name: "Add engineer",
-        },
-        {
-          value: "addIntern",
-          name: "Add intern",
-        },
-        {
-          value: "finish",
-          name: "Finish",
-        },
-      ],
-    },
-  ])
-  .then((data) => {
-    const manager = new Manager(
-      data.employeeId,
-      data.managerName,
-      data.managerEmail,
-      data.officeNumber
-    );
-    team.addMember(manager);
-    getNext(data.addMore);
-  });
-
-generateHtml();
+init();
